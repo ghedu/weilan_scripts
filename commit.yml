@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /juejin.js:
-    newFile: !uuid '395d2e4b24d9141017fd73dd9713e3dd96f0a37b'
+  /kjgzz.js:
+    newFile: !uuid '07513affc02d2c5752b653da38154a8ddaa88ecf'
     oldFile: null
-gitCommitId: !uuid '3fd4c0e7289cbf510c280a3e5c6bb0061ad4d9e9'
+gitCommitId: !uuid '66eba1c31e6bc28e8c861defbfe390479220078c'
 renames: {
   }
-revisionId: 5
+revisionId: 6
