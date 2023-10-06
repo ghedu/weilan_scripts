@@ -5,7 +5,8 @@
 登录微信小程序授权手机号然后下载APP设置密码
 export BOX_data=手机号@密码
 多账号用'===='隔开 例 账号1====账号2
-cron： 0 8 * * *
+cron： 9 8 * * *
+const $ = new Env("57box")
 """
 
 lottery = 1  # 抽鞋盒开关 1开启 0关闭
