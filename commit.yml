@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /jdb.js:
-    newFile: !uuid '39f7e9c5c89a21a0d0ed76e544e1160069b089ff'
+  /kuaishou_dt.js:
+    newFile: !uuid 'fd9a8a88292a88de769d619049e6b551ded69d34'
     oldFile: null
-gitCommitId: !uuid '63f2974996177b4475ab9040593c87f1c7b9e91e'
+gitCommitId: !uuid '872baca770646735fd437aeddb5ac1a9f445de44'
 renames: {
   }
-revisionId: 24
+revisionId: 25
