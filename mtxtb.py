@@ -1,21 +1,35 @@
 """
 
-time：2023.9.9
-cron: 12 0,8,12,14,16,18,10 * * *
-new Env('美团小团币');
-抓包小程序或者app或者网页的token=xxxxxx  只要token后面的值
-环境变量: mttoken = xxxxxx
+time：2023.10.31
+定时：一天至少3-5次
+正常是每天700+币
+new Env('美团小团币游戏中心');
+抓包小程序或者app或者网页的token=Agxxxx  只要token后面的值
+环境变量: 名称：bd_mttoken   值：Agxxxxxxxxxx
 多账号新建变量或者用 & 分开
+并发变量: bd_xtbbf = 1   默认不设置为1
+
+更新日志：
+10.31: 修复报错
+10.24: 关闭授权，开源
+9.26: 优化报错，并发变量
+9.24: 新增账号并发运行
 
 """
-
+import random
+import base64
+import os
+import requests
+import time
+import string
 from functools import partial
-import os, requests, time, base64, random, string
 from user_agent import generate_user_agent
+import threading
 
 
 class Mttb:
-    def __init__(self, ck):
+    def __init__(self, ck, num):
+        self.num = num
         self.ck = ck
         self.name = None
         self.name = None
@@ -23,19 +37,22 @@ class Mttb:
         self.actoken = None
         self.xtb = None
         self.wcxtb = None
-        self.ids = [323, 324, 325, 326, 329, 330, 331, 332, 333, 383, 386, 393, 394, 395, 397, 507, 509, 510, 511, 525,
-                    526, 527, 528, 529, 672, 768]
+        self.ids = []
+        self.ids1 = []
         self.id = None
         self.tid = None
         self.ua = generate_user_agent(os='android')
         self.t_h = None
+        self.msg = ''
+        self.start = ''
+        self.end = ''
 
     def main(self):
         if self.login():
             self.act()
             self.cxtb()
-            print(f'{self.name}>>>尝试获取任务中！')
-            self.get_id()
+            if self.get_ids():
+                self.get_id()
 
     def login(self):
         try:
@@ -56,8 +73,8 @@ class Mttb:
                 rj = r.json()
                 self.name = rj["user"]["username"]
                 self.usid = rj["user"]["id"]
-                xx = f'{self.name}>>>登录成功！'
-                print(xx)
+                xx = f'😶账号{self.num}\n🆔{self.name}\n'
+                self.start += xx
                 return True
             else:
                 print(r.json())
@@ -86,7 +103,6 @@ class Mttb:
             r = requests.post(url, headers=h, json=data)
             if r.json()['data']['loginInfo']['accessToken'] is not None:
                 self.actoken = r.json()['data']['loginInfo']['accessToken']
-                # print(f'{self.name}>>>获取token成功！')
             else:
                 print(r.json())
         except Exception as e:
@@ -97,14 +113,9 @@ class Mttb:
         try:
             url = 'https://game.meituan.com/mgc/gamecenter/skuExchange/resource/counts?sceneId=3&gameId=10102'
             self.t_h = {
-                'Accept': 'application/json, text/plain, */*',
-                'x-requested-with': 'XMLHttpRequest',
                 'User-Agent': self.ua,
-                'Content-Type': 'application/json;charset=UTF-8',
-                'mtgsig': '',
                 'actoken': self.actoken,
                 'mtoken': self.ck,
-                'cookie': f'token={self.ck}'
             }
             r = requests.get(url, headers=self.t_h)
             rj = r.json()
@@ -113,24 +124,51 @@ class Mttb:
                 for d in data:
                     if self.xtb is not None:
                         self.wcxtb = d['count']
-                        xx = f'{self.name}>>>当前小团币: {self.wcxtb}'
-                        print(xx)
+                        xx = f'💰当前小团币: {int(self.wcxtb)}({int(self.wcxtb) / 1000}元)\n'
+                        self.end += xx
                     else:
                         self.xtb = d['count']
-                        xx = f'{self.name}>>>小团币: {self.xtb}'
-                        print(xx)
+                        xx = f'💰小团币: {int(self.xtb)}({int(self.xtb) / 1000}元)\n'
+                        self.start += xx
+                        print(self.start)
         except Exception as e:
-            print(f'查询团币异常：{e}')
+            print(f'🆔{self.name}>>>⚠️查询团币异常：{e}')
+
+    def get_ids(self):
+        try:
+            url = 'https://game.meituan.com/mgc/gamecenter/front/api/v1/mgcUser/task/queryMgcTaskInfo'
+            data = {
+                "externalStr": "",
+                "riskParams": {}
+            }
+            r = requests.post(url, headers=self.t_h, json=data)
+            rj = r.json()
+            if rj['msg'] == 'ok':
+                data_list = r.json()['data']['taskList']
+                for i in data_list:
+                    self.ids.append(i['id'])
+                if self.ids:
+                    random.shuffle(self.ids)
+                    # print(self.ids)
+                    return True
+            else:
+                print(f'{self.name}>>>获取任务失败！')
+        except Exception as e:
+            print(f'获取任务异常：{e}')
             exit(0)
 
     def get_id(self):
-        for i in self.ids:
-            self.id = i
+        for idd in self.ids:
+            self.id = idd
             if self.get_game():
                 self.post_id()
-        print(f'{self.name}>>>全部任务完成！')
+        xx = f'😊账号{self.num}\n🆔{self.name}>>>🎉运行完成！\n'
+        self.end += xx
         self.cxtb()
-        print(f'{self.name}>>>本次运行获取小团币: {int(self.wcxtb) - int(self.xtb)}')
+        bchd = int(self.wcxtb) - int(self.xtb)
+        xx = f'🔔获取小团币: {bchd}\n'
+        self.end += xx
+        print(self.end)
 
     def b64(self):
         y_bytes = base64.b64encode(self.tid.encode('utf-8'))
@@ -143,60 +181,103 @@ class Mttb:
             self.tid = self.b64()
             url = f'https://game.meituan.com/mgc/gamecenter/common/mtUser/mgcUser/task/finishV2?taskId={self.tid}'
             r = requests.get(url, headers=self.t_h)
-            # print(r.json())
             if r.status_code == 200:
                 if r.json()['msg'] == 'ok':
-                    print(f'{self.name}>>>任务领取成功！')
-                    time.sleep(3)
+                    # print(f'{self.name}>>>{self.id} 领取任务成功！')
+                    time.sleep(1)
                     return True
                 elif '完成过' in r.text:
-                    pass
+                    # print(f'{self.name}>>>{self.id} 完成过领取任务成功！')
+                    time.sleep(1)
+                    return True
                 else:
-                    print(f'🌚任务状态: {r.text}')
+                    print(f'🆔{self.name}>>>🌚任务状态: {r.text}')
             else:
-                print('请求错误: ', r.status_code)
+                print(f'🆔{self.name}>>>请求错误: ', r.status_code)
         except Exception as e:
-            print(f'获取任务异常：{e}')
-            exit(0)
+            print(f'🆔{self.name}>>>⚠️获取任务异常：{e}')
 
     def post_id(self):
         try:
-            url = 'https://game.meituan.com/mgc/gamecenter/front/api/v1/mgcUser/task/receiveMgcTaskReward?yodaReady=h5&csecplatform=4&csecversion=2.1.0&mtgsig={}'
+            url = 'https://game.meituan.com/mgc/gamecenter/front/api/v1/mgcUser/task/receiveMgcTaskReward'
             data = {
                 "taskId": self.id,
                 "externalStr": "",
                 "riskParams": {}
             }
             r = requests.post(url, headers=self.t_h, json=data)
-            # print(r.json())
             if r.status_code == 200:
                 if r.json()['msg'] == 'ok':
-                    print(f'{self.name}>>>完成任务！')
-                    time.sleep(3)
+                    # print(f'{self.name}>>>{self.id},完成任务！\n')
+                    time.sleep(1)
                 elif '异常' in r.text:
-                    print(f'{self.name}>>>状态异常，任务不可领奖！')
-                    time.sleep(3)
+                    # print(f'{self.name}>>>{self.id},状态异常，任务不可领奖！\n')
+                    time.sleep(1)
                 else:
-                    print(f'{self.name}>>>{r.text}')
-                    time.sleep(3)
+                    print(f'{self.name}>>>{self.id},{r.text}\n')
+                    time.sleep(1)
             else:
                 print('请求错误!')
         except Exception as e:
-            print(f'完成任务异常：{e}')
-            exit(0)
+            print(f'🆔{self.name}>>>⚠️完成任务异常：{e}')
 
 
 if __name__ == '__main__':
     print = partial(print, flush=True)
-    token = os.environ.get("mttoken")
+    print('🔔当前版本V10.31\n🔔tg频道：https://t.me/dzr_byg')
 
+    token = os.environ.get("bd_mttoken")
+    if token is None:
+        print(f'⛔️未获取到ck变量：请检查变量是否填写')
+        exit(0)
     if '&' in token:
         tokens = token.split('&')
     else:
         tokens = [token]
 
-    print(f'获取到{len(tokens)}个账号')
+    bf = os.environ.get("bd_xtbbf")
+    if bf is None:
+        print(f'⛔️为设置并发变量，默认1')
+        bf = 1
 
-    for token in tokens:
-        run = Mttb(token)
+    print(f'✅获取到{len(tokens)}个账号')
+    print(f'🔔设置并发数: {bf}')
+
+
+    def run_account(tk, n):
+        run = Mttb(tk, n)
         run.main()
+
+
+    threads = []
+    s_e = []
+    for i in range(len(tokens)):
+        a = i + 1
+        s_e.append(a)
+        t = threading.Thread(target=run_account, args=(tokens[i], a,))
+        threads.append(t)
+        if str(len(threads)) == str(bf):
+            print(f'==================⏳账号{s_e[0]}-{s_e[-1]}==================')
+            for t in threads:
+                t.start()
+                time.sleep(5)
+            print(f'⏳账号{s_e[0]}-{s_e[-1]}任务运行中！')
+            for t in threads:
+                t.join()
+            threads = []
+            s_e = []
+            time.sleep(5)
+    if threads == [] and s_e == []:
+        print(f'🔔全部账号运行完成！！！')
+    else:
+        print(f'==================账号{s_e[0]}-{s_e[-1]}==================')
+        for t in threads:
+            t.start()
+            time.sleep(3)
+        print(f'⏳账号{s_e[0]}-{s_e[-1]}任务运行中！')
+        for t in threads:
+            t.join()
+        threads = []
+        s_e = []
+        time.sleep(5)
+        print(f'🔔全部账号运行完成！！！')
