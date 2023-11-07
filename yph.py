@@ -1,6 +1,6 @@
 """
-@Qim出品 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
-玉品汇_V0.12   红包
+仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
+玉品汇_V0.12   红包 先实名再运行
 入口 http://up.yuojo.com/index/index/register?code=62841E
 抓包域名 http://up.yuojo.com取出token
 export yphtoken=token
