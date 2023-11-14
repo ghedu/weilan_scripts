@@ -1,121 +1,109 @@
-'''
-火锅视频 v1.3 update add 提现功能
-变量 hgsp_cookie 账号和密码以@隔开 账号@密码
-多账号以&隔开 账号1@密码1 & 账号2@密码2
-开启自动提现功能 设置变量 export hgsp_wd="true" 默认不开启
-开启自动兑换储蓄金 设置变量 export hgsp_es="true" 默认不开启
-注册链接:http://www.huoguo.video/h5/reg.html?invite_code=L7KXVD
-'''
-import requests
+"""
+@tan90修复 仅供学习交流，请在下载后的24小时内完全删除 请勿将任何内容用于商业或非法目的，否则后果自负。
+火锅视频_V0.1   现金毛
+入口 http://www.huoguo.video/h5/reg.html?invite_code=9H85EX
+直接填入账号密码
+export HG_phone=账号@密码
+多账号用'===='隔开 例 账号1====账号2
+cron： 0 0 1,14 * * ?
+"""
 import time
+
+# from dotenv import load_dotenv
+#
+# load_dotenv()
 import os
-import sys
+import requests
 
-
-class HgSp():
-    VIDEO_F:int = 13 #视频次数
-    def __init__(self,account,hgsp_wd,hgsp_es,video_f=VIDEO_F):
-        account=account.split('@')
-        self.video_f=video_f
-        self.hgsp_wd=hgsp_wd
-        self.hgsp_es=hgsp_es
-        self.session = requests.Session()
-        self.headers={
+accounts = os.getenv('HG_phone')
+if accounts is None:
+    print('你没有填入HG_phone，咋运行？')
+    exit()
+else:
+    accounts_list = os.environ.get('HG_phone').split('====')
+    num_of_accounts = len(accounts_list)
+    print(f"获取到 {num_of_accounts} 个账号")
+    for i, account in enumerate(accounts_list, start=1):
+        values = account.split('@')
+        login, password = values[0], values[1]
+        print(f"\n=======开始执行账号{i}=======")
+        url = "http://www.huoguo.video/api/v2/auth/login"
+        headers = {
             'os': 'android',
             'Version-Code': '1',
             'Client-Version': '1.0.0',
-            'datetime': '2023-10-20 16:19:59.694',
+            'datetime': '2023-10-24 13:09:56.685',
+            'Accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded',
+            'Content-Length': '59',
             'Host': 'www.huoguo.video',
-            'Connection': 'Keep-Alive',
-            'User-Agent': 'okhttp/3.12.13',
+            'User-Agent': 'okhttp/3.12.13'
         }
-        self.data = {
-            'login': account[0],
+        data = {
+            'login': login,
             'type': '2',
             'verifiable_code': '',
-            'password': account[1]
+            'password': password
         }
+        response = requests.post(url, headers=headers, data=data).json()
+        if "access_token" in response:
+            print(f'登录成功')
+            token = response['access_token']
+            url = "http://www.huoguo.video/api/v2/user"
+            headers = {
+                "os": "android",
+                "Version-Code": "1",
+                "Client-Version": "1.0.0",
+                "datetime": "2023-10-23 13:03:23.232",
+                "Accept": "application/json",
+                "Authorization": f"Bearer {token}",
+            }
 
-    # 登录
-    def login(self):
-        login_response = self.session.post('http://www.huoguo.video/api/v2/auth/login', headers=self.headers, data=self.data).json()
-        if "access_token" in login_response:
-            token = login_response['access_token']
-            del self.headers['Content-Type']
-            self.headers['Authorization']=f"Bearer {token}"
-            response = self.session.get('http://www.huoguo.video/api/v2/user', headers=self.headers).json()
-            print(f"✅✅登录成功,当前用户:{response['name']}")
-            self.main()
-        else:
-            print(f"{login_response['message']}")
-
-    # 观看视频
-    def watch_video(self):
-        for i in range(self.video_f):
-            response = self.session.get('http://www.huoguo.video/api/v2/hgb/recive', headers=self.headers).json()
-            print(f'【观看视频】{response["message"]}')
-            if '火锅币' not in response['message']:
-                break
-            time.sleep(16)
-        self.get_today_info()
-
-    # 获取今日信息
-    def get_today_info(self):
-        response = self.session.get('http://www.huoguo.video/api/v2/hgb/detail', headers=self.headers).json()
-        self.coin = response['coin']
-        self.today_coin = response['today_coin']
-        print(f"【观看视频】今日获得火锅币:{self.today_coin},当前总火锅币:{self.coin}")
-
-    # 兑换储蓄金
-    def exchange_saving(self):
-        data = {'count': self.coin}
-        response = self.session.post('http://www.huoguo.video/api/v2/hgb/exchange-savings', headers=self.headers, data=data).json()
-        if "amount" in response:
-            print(f"【兑换储蓄金】获得储蓄金{response['amount']}")
-        else:
-            print(f"【兑换储蓄金】{response['message']}")
-
-    # 查询信息
-    def get_info(self):
-        response = self.session.get('http://www.huoguo.video/api/v2/hgb/piggy', headers=self.headers).json()
-        self.balance = response['balance']
-        print(f"【查询信息】当前总储蓄金:{response['saving']} 可提现余额为：{response['balance']}")
-
-    # 提现
-    def withdraw(self):
-        balance_float = float(self.balance)
-        amount = "{:.2f}".format(balance_float)
-        data = {'amount': amount}
-        response = self.session.post("http://www.huoguo.video/api/v2/wallet/withdraw", headers=self.headers,data=data).json()
-        print(response)
-
-
-
-    def main(self):
-        self.watch_video()
-        if self.hgsp_es == 'true':
-            self.exchange_saving()
-        self.get_info()
-        if self.hgsp_wd == 'true':
-            self.withdraw()
-
-
-
-# 主程序
-def main():
-    global account_list
-    account_list=os.getenv("hgsp_cookie").split('&')
-    hgsp_wd=os.getenv("hgsp_wd")
-    hgsp_es=os.getenv("hgsp_es")
-    if not account_list:
-        print('没有获取到账号!')
-        return
-    print(f'⭐⭐获取到{len(account_list)}个账号')
-    for index,account in enumerate(account_list):
-        print(f'=================== 第{index + 1}个账号 ======================')
-        HgSp(account,hgsp_wd,hgsp_es).login()
-
-if __name__ == '__main__':
-    main()
-    sys.exit()
+            response = requests.get(url, headers=headers).json()
+            name = response['name']
+            phone = response['phone']
+            print(name, phone)
+            print(f"-----------执行任务-----------")
+            for i in range(24):
+                time.sleep(5)
+                url = "http://www.huoguo.video/api/v2/hgb/recive"
+                response = requests.get(url, headers=headers).json()
+                message = response['message']
+                if message == "火锅币 +40.00":
+                    print(f"第{i + 1}次执行---{message}")
+                else:
+                    print(f"{response}")
+                    break
+            url = "http://www.huoguo.video/api/v2/hgb/detail"
+            response = requests.get(url, headers=headers).json()
+            coin = response['coin']
+            today_coin = response['today_coin']
+            print(f"今日获得火锅币:{today_coin},当前总火锅币:{coin}")
+            
+            
+            
+           
+            time.sleep(5)
+            url = "http://www.huoguo.video/api/v2/hgb/open"
+            response = requests.get(url, headers=headers).json()
+            if "amount" in response:
+                print(f"今日释放{response['amount']}")
+          
+            url = "http://www.huoguo.video/api/v2/hgb/exchange-savings"
+            data = {
+                'count': coin
+            }
+            response = requests.post(url, headers=headers,data=data).json()
+            if "amount" in response:
+                print(f'获得储蓄金{response["amount"]}')
+            else:
+                print(f"{response['message']}")
+            url = "http://www.huoguo.video/api/v2/hgb/piggy"
+            response = requests.get(url, headers=headers).json()
+            saving = response['saving']
+            balance = response['balance']
+            print(f"当前总储蓄金:{saving} 可提现余额为：{balance}")
+            
+            
+            
+            
