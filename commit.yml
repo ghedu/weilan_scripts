@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /hgsp.py:
-    newFile: !uuid '1079f75b787a8ce97abce81a8649d297b787157e'
-    oldFile: !uuid '200d24ea85a5b4081d3acf117890757a2915126c'
-gitCommitId: !uuid '9b67b536a274f8ea87fc372fdce6ea498dd9a1a8'
+  /wangchao.js:
+    newFile: !uuid '48670e6a322e184ce0ec2107280b01393779140f'
+    oldFile: null
+gitCommitId: !uuid '10a196be6779070f60c262db91df17cebf4d9013'
 renames: {
   }
-revisionId: 47
+revisionId: 48
