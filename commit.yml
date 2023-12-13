@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /xingfukandian.js:
-    newFile: !uuid 'e87edb0c5b0cadc4c6590de52006b486c050caa2'
+  /xiaongmaozhuan.js:
+    newFile: !uuid '58cdce9e5255c9a6d320c8e026f75066b0f313c4'
     oldFile: null
-gitCommitId: !uuid 'bf4c925d8653efea6d2aacc85b934ad10b1586eb'
+gitCommitId: !uuid 'f0d611e6a2aaf9b97955cee54d6080f9381e3823'
 renames: {
   }
-revisionId: 65
+revisionId: 66
