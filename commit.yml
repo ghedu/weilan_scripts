@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /xiaongmaozhuan.js:
-    newFile: !uuid '58cdce9e5255c9a6d320c8e026f75066b0f313c4'
+  /taipingyangqc.js:
+    newFile: !uuid '563f1ba9dee1d38fbfa84b386c352c0807a4a5ba'
     oldFile: null
-gitCommitId: !uuid 'f0d611e6a2aaf9b97955cee54d6080f9381e3823'
+gitCommitId: !uuid '387ef9143569722a1a667ed4241a059faefeb346'
 renames: {
   }
-revisionId: 66
+revisionId: 67
