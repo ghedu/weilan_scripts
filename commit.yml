@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /taipingyangqc.js:
-    newFile: !uuid '563f1ba9dee1d38fbfa84b386c352c0807a4a5ba'
+  /guangxi.m3u8:
+    newFile: !uuid '2cf890f7f3cddaaf58946674ad57bcb5acae57e7'
     oldFile: null
-gitCommitId: !uuid '387ef9143569722a1a667ed4241a059faefeb346'
+gitCommitId: !uuid '4863a005ae0d49dc4ffdfef21b98be63c4047464'
 renames: {
   }
-revisionId: 67
+revisionId: 68
