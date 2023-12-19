@@ -3,9 +3,9 @@ branches: {
   }
 fileChange:
   /guangxi.m3u8:
-    newFile: !uuid '2cf890f7f3cddaaf58946674ad57bcb5acae57e7'
-    oldFile: null
-gitCommitId: !uuid '4863a005ae0d49dc4ffdfef21b98be63c4047464'
+    newFile: null
+    oldFile: !uuid '2cf890f7f3cddaaf58946674ad57bcb5acae57e7'
+gitCommitId: !uuid 'eeb941dce5baa1b66d0c68f1c27726e03227b56f'
 renames: {
   }
-revisionId: 68
+revisionId: 69
