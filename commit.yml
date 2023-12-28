@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /guangxi.m3u8:
-    newFile: null
-    oldFile: !uuid '2cf890f7f3cddaaf58946674ad57bcb5acae57e7'
-gitCommitId: !uuid 'eeb941dce5baa1b66d0c68f1c27726e03227b56f'
+  /wbdt.py:
+    newFile: !uuid 'cb3f12f3603ea1545769db7e208b1821e3b53fe4'
+    oldFile: !uuid 'a5f4b48b182dd8c964f4878b1f7408d32696c7a4'
+gitCommitId: !uuid 'e4e2b260d37369eaeed4405e084de33c877e0a94'
 renames: {
   }
-revisionId: 69
+revisionId: 70
