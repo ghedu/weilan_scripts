@@ -85,9 +85,9 @@ def tixian(uuid,headers,sign):
     print(response)
 
 def run(uuid):
-    sign = ''
-    cookie = ''
-    token = ''
+    sign = '618bf0a707da05dbe7c5a7250252bea4e60a2185'
+    cookie = 'PHPSESSID=a0d314ddde948406042536d5fa02f0a9; expires=Fri, 29-Dec-2023 07:24:14 GMT; Max-Age=86400; path=/'
+    token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJ3ZW5ibyIsImF1ZCI6IndlbmJvbWluaSIsImlhdCI6MTcwMzc0ODIzMCwibmJmIjoxNzAzNzQ4MjI5LCJleHAiOjE3MDM3NTE4MzAsImRhdGEiOnsidXNlcmlkIjoyMDE5Mn19.a-I2fLYcHcHgzrlEzP-ppYygUKbXQnpQW9NIVUyzw8w'
     if sign == '':
         print('手动补全88-90行数据')
         exit()
