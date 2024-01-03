@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /wbdt.py:
-    newFile: !uuid 'ded67a8160ca65c11b24c77f0f131974ef23dac8'
-    oldFile: !uuid 'cb3f12f3603ea1545769db7e208b1821e3b53fe4'
-gitCommitId: !uuid 'e3fe93ea913fdb67998c2e7f523164f912137f29'
+  /xiaongmaozhuan.js:
+    newFile: !uuid '70ee7ddab37d0543ae0ed21017fb31dcb712771d'
+    oldFile: !uuid '58cdce9e5255c9a6d320c8e026f75066b0f313c4'
+gitCommitId: !uuid '2834d276f94fed6b6dd22a8ead0618f0ed77591f'
 renames: {
   }
-revisionId: 71
+revisionId: 72
