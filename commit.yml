@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /jincaiyun.js:
-    newFile: !uuid '460700045a1d4d2ad1292efbed52e45c2abec6d5'
+  /yongpai.js:
+    newFile: !uuid '069e37ea5d19908239c36619961ea5f37b86625a'
     oldFile: null
-gitCommitId: !uuid '702654adfa90de08fe87dc7f3e6156bf91d03eb6'
+gitCommitId: !uuid '6e8cb132a70bcbf011b895400801d59ac62b470f'
 renames: {
   }
-revisionId: 74
+revisionId: 75
