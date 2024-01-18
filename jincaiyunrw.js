@@ -13,7 +13,7 @@
 
 /**这里在``里面写你的卡密 */
 
-const key = ``
+const key = `872aa01954cf59de5b4be82616371066`
 let ckName = "JinCaiYunTouLu";
 
 
