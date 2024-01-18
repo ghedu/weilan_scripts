@@ -3,9 +3,9 @@ branches: {
   }
 fileChange:
   /jincaiyun.js:
-    newFile: !uuid 'f9f4ee50953dbbf2ebeaccacc24becad5737df27'
-    oldFile: !uuid '460700045a1d4d2ad1292efbed52e45c2abec6d5'
-gitCommitId: !uuid '19184d75211dc8c83e044b9bd2a592402305c862'
+    newFile: !uuid 'fdb303b291599ea7414985c9ee2555b9ab634211'
+    oldFile: !uuid 'f9f4ee50953dbbf2ebeaccacc24becad5737df27'
+gitCommitId: !uuid '22bd33c023f2946ddcc3ace577c001a2b6b31d87'
 renames: {
   }
-revisionId: 76
+revisionId: 77
