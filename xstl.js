@@ -21,7 +21,7 @@ class UserInfo {
         this.artList = []
         this.accountId = null;
         this.sessionId = null;
-        this.channelId = [`6530daf779f6be358bba1522`, `6530dae171a9ed74577e4689`, `6530db1e71a9ed74577e468e`];
+        this.channelId = [`6530daf779f6be358bba1522`, `6530dae171a9ed74577e4689`, `6530db1e71a9ed74577e468e`,`657fe99979f6be03b8fd7fb8`,`657fe9ad79f6be03b8fd7fb9`];
         this.round = 1;
         this.num = null;
         this.mobile = str.split(strSplitor)[0];
@@ -50,7 +50,14 @@ class UserInfo {
                         await this.art_list(this.channelId[2]);
                         this.round = 3;
                     }
-
+                    if (this.artList.length == 0) {
+                        await this.art_list(this.channelId[3]);
+                        this.round = 4;
+                    }
+                                        if (this.artList.length == 0) {
+                        await this.art_list(this.channelId[4]);
+                        this.round = 5;
+                    }
                     if (this.artList.length !== 0) {
                         this.num = this.artList.length
                         for (let artId of this.artList) {
