@@ -2,7 +2,7 @@
  *  https://ypapp.cnnb.com.cn/yongpai-user/api/duiba/autologin  链接下的userId
  */
 
-const yongpai = ""//格式为userId#deviceId支付宝账号#姓名 多账户&
+const yongpai = "1170504741372228278#3951E9AC-7F7A-4DC2-90CB-F080AA416152#admin@suguat.cn#黄萌"//格式为userId#deviceId支付宝账号#姓名 多账户&
 //手动点赞文章后https://ypapp.cnnb.com.cn/yongpai-ugc/api/praise/save_news?deviceId=的值 就是deviceId
 //deviceId 一般是16位  必须真机抓 瞎写的的点赞不成功
 const axios = require("axios").default;
@@ -168,7 +168,7 @@ async function doTakePrize() {
         console.log($.userId, $.account)
         await doTask();
         //await get_id()
-        $.id = 251912012489131
+        $.id = 252639988828606
         await get_autologin();
         await get_token()
         await doJoin()
