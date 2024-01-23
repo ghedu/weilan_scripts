@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /xstl.js:
-    newFile: !uuid 'd6073882e48e95a89ef41a655984526e28fe7cd0'
-    oldFile: !uuid '3407c996f265a29a016debdd0d61cf277758497d'
-gitCommitId: !uuid 'c468840afd94d09291cfe3459130954a8f964363'
+  /yongpai.js:
+    newFile: !uuid '082396a29774ac3c84d69a6fe722da762f1c02e9'
+    oldFile: !uuid '069e37ea5d19908239c36619961ea5f37b86625a'
+gitCommitId: !uuid '19c86114144014c9825ed19a13e4fb3d7cd6b85b'
 renames: {
   }
-revisionId: 81
+revisionId: 82
