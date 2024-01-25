@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /yongpai.js:
-    newFile: !uuid '082396a29774ac3c84d69a6fe722da762f1c02e9'
-    oldFile: !uuid '069e37ea5d19908239c36619961ea5f37b86625a'
-gitCommitId: !uuid '19c86114144014c9825ed19a13e4fb3d7cd6b85b'
+  /xpg_tg.js:
+    newFile: !uuid '5511f773318622fd8c4d6f4d9e908b1cf79b5cbd'
+    oldFile: null
+gitCommitId: !uuid '6e59dd9719066b8bcd3c24bbeb8ee65b162c26a8'
 renames: {
   }
-revisionId: 82
+revisionId: 83
