@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /xpg_tg.js:
-    newFile: !uuid '5511f773318622fd8c4d6f4d9e908b1cf79b5cbd'
+  /jincaiyun_old.js:
+    newFile: !uuid 'e9e8c8426c25e613da06e055116f36b712180247'
     oldFile: null
-gitCommitId: !uuid '6e59dd9719066b8bcd3c24bbeb8ee65b162c26a8'
+gitCommitId: !uuid '37f1702a2d56be9f891b31fe6c54bcf6f00fc671'
 renames: {
   }
-revisionId: 83
+revisionId: 84
