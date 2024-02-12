@@ -1,8 +1,8 @@
 /**
  * cron 5 15 * * *  V3.js
  * Show:  每天0.6
- * 变量名:账号密码
- * 变量值:
+ * 变量名:账号&密码
+ * 变量值:xiaosa
  * scriptVersionNow = "0.0.1";
  */
 
@@ -21,8 +21,8 @@ class UserInfo {
         this.artList = []
         this.accountId = null;
         this.sessionId = null;
-        this.channelId = [`6530daf779f6be358bba1522`, `6530dae171a9ed74577e4689`, `6530db1e71a9ed74577e468e`,`657fe99979f6be03b8fd7fb8`,`657fe9ad79f6be03b8fd7fb9`];
-        this.round = 1;
+        this.channelId = [`6530daf779f6be358bba1522`, `6530dae171a9ed74577e4689`, `6530db1e71a9ed74577e468e`, `657fe99979f6be03b8fd7fb8`, `657fe9ad79f6be03b8fd7fb9`, `65a9e12879f6be03b8fd807d`, `65a9e13b79f6be03b8fd807e`, `65baf8d979f6be5b358ba618`, `65baf8ed79f6be5b358ba619`];
+        this.round = 0;
         this.num = null;
         this.mobile = str.split(strSplitor)[0];
         this.password = str.split(strSplitor)[1];
@@ -40,40 +40,29 @@ class UserInfo {
             if (this.accountId !== null && this.sessionId !== null) {
                 await this.user_info()
                 if (this.wxopenId !== "" && this.wxopenId !== null) {
-                    await this.art_list(this.channelId[0]);
-                    this.round = 1;
-                    if (this.artList.length == 0) {
-                        await this.art_list(this.channelId[1]);
-                        this.round = 2;
-                    }
-                    if (this.artList.length == 0) {
-                        await this.art_list(this.channelId[2]);
-                        this.round = 3;
-                    }
-                    if (this.artList.length == 0) {
-                        await this.art_list(this.channelId[3]);
-                        this.round = 4;
-                    }
-                                        if (this.artList.length == 0) {
-                        await this.art_list(this.channelId[4]);
-                        this.round = 5;
-                    }
-                    if (this.artList.length !== 0) {
-                        this.num = this.artList.length
-                        for (let artId of this.artList) {
-                            await this.read_status(artId)
-                            if (this.artReadStatus == true) {
-                                console.log(`已阅读${artId}`)
-                                await this.read_task(artId)
-                            } else if (this.artReadStatus == false) {
-                                console.log(`未阅读${artId}`)
-                                await this.do_read(artId)
-                                await $.wait(5000)
-                                await this.read_task(artId)
+                    for (let i = 0; i < this.channelId.length; i++) {
+                        await this.art_list(this.channelId[i]);
+                        this.round = i + 1;
+                        if (this.artList.length !== 0) {
+                            console.log(this.channelId[i],this.round)
+                            this.num = this.artList.length;
+                            for (let artId of this.artList) {
+                                await this.read_status(artId);
+                                if (this.artReadStatus) {
+                                    console.log(`已阅读${artId}`);
+                                    await this.read_task(artId);
+                                } else {
+                                    console.log(`未阅读${artId}`);
+                                    await this.do_read(artId);
+                                    await $.wait(5000);
+                                    await this.read_task(artId);
+                                }
                             }
+                            await this.lottery_num()
+                            break;
                         }
-                        await this.lottery_num()
                     }
+                    
 
                 } else {
                     $.log(`未绑定微信`)
@@ -231,7 +220,7 @@ class UserInfo {
                 headers: this.get_headers(),
             };
             let { body: result } = await httpRequest(options);
-            //console.log(options);
+            console.log(options);
             result = JSON.parse(result);
             console.log(result);
             if (result.code == "0") {
@@ -400,8 +389,8 @@ async function start() {
  * @returns
  */
 async function checkEnv() {
-    //let userCookie = ($.isNode() ? process.env[ckName] : $.getdata(ckName)) || "";
-    let userCookie = ($.isNode() ? process.env[ckName] : $.getdata(ckName)) || "";
+        let userCookie = ($.isNode() ? process.env[ckName] : $.getdata(ckName)) || "";
+
     if (userCookie) {
         let e = envSplitor[0];
         for (let o of envSplitor)
