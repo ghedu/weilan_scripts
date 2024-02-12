@@ -168,7 +168,7 @@ async function doTakePrize() {
         console.log($.userId, $.account)
         await doTask();
         //await get_id()
-        $.id = 252639988828606
+        $.id = 255562754277781
         await get_autologin();
         await get_token()
         await doJoin()
