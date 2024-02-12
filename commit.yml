@@ -2,16 +2,10 @@
 branches: {
   }
 fileChange:
-  /dd_bucketWater.js:
-    newFile: null
-    oldFile: !uuid '793015b88f2af620be306150bf9de042ca984b4d'
-  /dwjk.py:
-    newFile: null
-    oldFile: !uuid 'e7af1a28649771c97a7f37e608c51b39d3bcf9d6'
-  /xstl.js:
-    newFile: !uuid '84a93a8acb267da6a5b483facf401950e5db3340'
-    oldFile: !uuid 'd6073882e48e95a89ef41a655984526e28fe7cd0'
-gitCommitId: !uuid 'c7fda36722296a14e96213fcfc6ee6d4ee25bafc'
+  /yongpai.js:
+    newFile: !uuid '72d9affe82833b5092a2f1397683159696222592'
+    oldFile: !uuid '082396a29774ac3c84d69a6fe722da762f1c02e9'
+gitCommitId: !uuid '727bc678ae5058c0400369a05f0b89e43de0c38e'
 renames: {
   }
-revisionId: 90
+revisionId: 91
