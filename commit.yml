@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /yongpai.js:
-    newFile: !uuid '72d9affe82833b5092a2f1397683159696222592'
-    oldFile: !uuid '082396a29774ac3c84d69a6fe722da762f1c02e9'
-gitCommitId: !uuid '727bc678ae5058c0400369a05f0b89e43de0c38e'
+  /baishi.py:
+    newFile: !uuid 'bece58b4712bf50fa008b7f0fd2b02ba08d1999c'
+    oldFile: !uuid 'd59ee6877069fa1e0bcf9117be10ef79c1c717ca'
+gitCommitId: !uuid 'cf29195e435d3cb0790c73e6faee67e0847173dc'
 renames: {
   }
-revisionId: 91
+revisionId: 92
