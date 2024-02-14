@@ -2,10 +2,13 @@
 branches: {
   }
 fileChange:
+  /qmsd.py:
+    newFile: !uuid '9d090a107eaa0d7adc8154ab323608dd77da9c38'
+    oldFile: null
   /xpg_tg.js:
-    newFile: !uuid 'e4dbe43fdd55fbdd413b4fbdbb6f865f9aab4d4d'
-    oldFile: !uuid '5511f773318622fd8c4d6f4d9e908b1cf79b5cbd'
-gitCommitId: !uuid '766d28bceecbd152c490ccaaabc26fce01c9e8e9'
+    newFile: !uuid '05365aaf976e23fded31a59b7e5b5e7dc86a97aa'
+    oldFile: !uuid 'e4dbe43fdd55fbdd413b4fbdbb6f865f9aab4d4d'
+gitCommitId: !uuid '790dd158731acac21185976e0fe0098bb0aff8af'
 renames: {
   }
-revisionId: 96
+revisionId: 97
