@@ -1,10 +1,15 @@
+/**
+ * cron 9 9 * * *  xx.js
+ * 变量名: xinxi
+ * 每天运行一次就行
+ * 报错是正常情况
+ * 变量值:api.xinc818.com 请求头中sso的值 多账户&或者换行
+ * scriptVersionNow = "0.0.1";
+ */
 
-const cash = 500;
-let ckName = "JinCaiYunTouLu";
-const waitTime =  50; 
-
-const $ = new Env("金彩云");
+const $ = new Env("心喜");
 const notify = $.isNode() ? require('./sendNotify') : '';
+let ckName = "xinxi";
 let envSplitor = ["&", "\n"]; //多账号分隔符
 let strSplitor = "#"; //多变量分隔符
 let userIdx = 0;
@@ -14,297 +19,261 @@ class Task {
         this.index = ++userIdx;
         this.ck = str.split(strSplitor)[0]; //单账号多变量分隔符
         this.ckStatus = true;
-        this.Api_DeviceId = str.split(strSplitor)[3];
-        this.Api_AuthId = str.split(strSplitor)[1]; //单账号多变量分隔符
-        this.Api_Token = str.split(strSplitor)[0]; //单账号多变量分隔符
-        this.Api_LoginKey = ""
-        this.Api_Authorization = ""
-        this.push_device = str.split(strSplitor)[2];
-        this.act_readList = []
-        this.BeiJingTime = ''
-        this.wa = true
+        this.userId = null
+        this.artList = []
+        this.goodsList = []
     }
     async main() {
-        await this.login_activity();
-        for (let i = 0; i < 10; i++) {
-            let v = await this.get_captcha();
-            if (v.code == 0) {
-                break;
+
+        await this.user_info();
+        if (this.ckStatus == true) {
+            await this.task_signin();
+            await this.task_lottery()
+            await this.task_share()
+            await this.task_goods()
+            await this.art_list()
+            if (this.artList.length > 0) {
+                await this.task_follow(this.artList[0])
             }
-        }
-        this.BeiJingTime = await this.getTime_china()
-        this.BeiJingTime = Number(this.BeiJingTime)
-        let date = new Date(this.BeiJingTime)
-        const hour = this.isInTimeRange(this.BeiJingTime)
-        if (hour) {
-            if (hour == 9) {
-                const morning9 = new Date(this.BeiJingTime);
-                morning9.setHours(9, 0, 0, 0);
-                let waitTime9 = morning9.getTime() - date.getTime()
-                console.log(`距离提现还剩` + waitTime9 + `毫秒`)
-                await $.wait(waitTime9 + Number(waitTime))
-                await this.task_exchange()
-            } else if (hour == 21) {
-                const evening9 = new Date(this.BeiJingTime);
-                evening9.setHours(21, 0, 0, 0);
-                let waitTime21 = evening9.getTime() - date.getTime()
-                console.log(`距离提现还剩` + waitTime21 + `毫秒`)
-                await $.wait(waitTime21 + Number(waitTime))
-                await this.task_exchange()
-            } else if (hour == 17) {
-                const evening17 = new Date(this.BeiJingTime);
-                evening17.setHours(17, 0, 0, 0);
-                let waitTime17 = evening17.getTime() - date.getTime()
-                console.log(`距离提现还剩` + waitTime17 + `毫秒`)
-                await $.wait(waitTime17 + Number(waitTime))
-                await this.task_exchange()
+            await this.goods_list()
+            if (this.goodsList.length > 0) {
+                await this.task_like(this.goodsList[0])
             }
+
         }
 
     }
-    isInTimeRange(timestamp) {
-        // 将时间戳转换为Date对象
-        const date = new Date(timestamp); // 注意时间戳单位是毫秒
-        const hour = date.getHours();
-        if (hour == 8 && hour < 9) {
-            return 9
-        } else if (hour == 20 && hour < 21) {
-            return 21
-        } else if (hour == 16 && hour < 17) {
-            return 17
-        }
-    }
-    async get_captcha() {
+
+    async task_signin() {
         try {
-            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/get`, { "module": "benefit", "activity_id": 1 })
-            //console.log(options);
+            let result = await this.taskRequest("get", `https://api.xinc818.com/mini/sign/in?dailyTaskId=`)
             //console.log(result);
             if (result.code == 0) {
-                $.log(`第[${this.index}]滑块获取成功`)
-                let { body: b64_tgResult } = await $.httpRequest({ "method": "get", url: "http://api.onecc.cc/api/urltob64?url=" + encodeURIComponent(result.data.jigsawImageUrl) })
-                let b64_tg = b64_tgResult.data
-                let { body: b64_bgResult } = await $.httpRequest({ "method": "get", url: "http://api.onecc.cc/api/urltob64?url=" + encodeURIComponent(result.data.originalImageUrl) })
-                let b64_bg = b64_bgResult.data
-                let x = await this.ocr(b64_tg, b64_bg)
-
-                let points = this.encryptData(x, result.data.secretKey)
-                //console.log(points)
-                let resultCaptcha = await this.check_captcha(points, result.data.token)
-
-                return resultCaptcha
+                $.log(`✅账号[${this.index}]  签到状态【${result.data.flag}】获得积分【${result.data.integral}】🎉`)
             } else {
-                $.log(`第[${this.index}]滑块获取失败`)
+                console.log(`❌账号[${this.index}]  签到状态【false】`);
+                console.log(result);
             }
-
         } catch (e) {
             console.log(e);
         }
     }
-    async ocr(tg, bg) {
-        //console.log(bg)
-        let bodyStr = JSON.stringify({ 'target_img': tg, 'bg_img': bg })
-        let body = Buffer.from(bodyStr, 'utf-8').toString('base64');
+    async user_info() {
         try {
-            let options = {
-                "method": "post", url: "http://ocr.onecc.cc/slide/match/b64/json",
-                body: body
-            }
-            let { body: result } = await $.httpRequest(options)
+            let result = await this.taskRequest("get", `https://api.xinc818.com/mini/user`)
             //console.log(options);
-            //console.log(result);
-            if (result.status == 200) {
-                $.log(`第[${this.index}]滑块识别结果`)
-                console.log(result.result["target"][0])
-                return result.result["target"][0]
+            console.log(result);
+            if (result.code == 0) {
+                $.log(`✅账号[${this.index}]  【${result.data.nickname}】积分【${result.data.integral}】🎉`)
+                this.userId = result.data.id
             } else {
-                $.log(`第[${this.index}]滑块识别失败`)
-                return false
+                console.log(`❌账号[${this.index}]  用户查询【false】`);
+                console.log(result);
             }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    //浏览30sAPI
+    async task_goods() {
+        try {
+            let result = await this.taskRequest("get", `https://api.xinc818.com/mini/dailyTask/browseGoods/22`)
+            //console.log(options);
+            console.log(result);
+            if (result.code == 0) {
+                if (result.data !== null) {
+                    $.log(`✅账号[${this.index}]  完成浏览30s成功 获得【${result.data.singleReward}】`)
+
+                } else {
+                    console.log(`❌账号[${this.index}]  完成浏览30s任务失败`);
+                }
+
+            } else {
+                console.log(`❌账号[${this.index}]  完成浏览30s任务失败`);
+
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    //想要任务API
+    async task_like(id) {
+        console.log(`https://api.xinc818.com/mini/integralGoods/${id}?type=`)
+        try {
+            let goodsResult = await this.taskRequest("get", `https://api.xinc818.com/mini/integralGoods/${id}?type=`)
+            if (goodsResult.data) {
+                let likeResult = await this.taskRequest("post", `https://api.xinc818.com/mini/live/likeLiveItem`, { "isLike": true, "dailyTaskId": 20, "productId": Number(goodsResult.data.outerId) })
+                //console.log(options);
+                console.log(likeResult);
+                if (likeResult.code == 0) {
+                    if (likeResult.data !== null) {
+                        $.log(`✅账号[${this.index}]  完成点击想要任务成功 获得【${likeResult.data.singleReward}】`)
+
+                    } else {
+                        console.log(`❌账号[${this.index}]  完成点击想要任务失败`);
+                    }
+                } else {
+                    console.log(`❌账号[${this.index}]  完成点击想要任务失败`);
+                    console.log(likeResult);
+                }
+            }
+
 
         } catch (e) {
             console.log(e);
         }
     }
-    async getTime_china() {
 
-        let { body: result } = await $.httpRequest({ method: "get", url: `https://m.tsa.cn/api/time/getCurrentTime` })
+    //关注用户API
+    async task_follow(pusherId) {
+        console.log(pusherId)
+        try {
+            let result = await this.taskRequest("post", `https://api.xinc818.com/mini/user/follow`, { "decision": true, "followUserId": pusherId })
+            //console.log(options);
+            console.log(result);
+            if (result.code == 0) {
+                if (result.data !== null) {
+                    $.log(`✅账号[${this.index}]  完成关注用户任务成功 获得【${result.data.singleReward}】`)
+                } else {
+                    console.log(`❌账号[${this.index}]  完成关注用户任务失败`);
+                }
+            } else {
+                console.log(`❌账号[${this.index}]  完成关注用户任务失败`);
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    //抽奖API
+    async task_lottery() {
+        try {
+            let result = await this.taskRequest("post", `https://api.xinc818.com/mini/lottery/draw`, { "activity": 61, "batch": false, "isIntegral": false, "userId": Number(this.userId), "dailyTaskId": 9 })
+            //console.log(options);
+            console.log(result);
+            if (result.code == 0) {
+                if (result.data !== null) {
+                    $.log(`✅账号[${this.index}]  完成抽奖成功 获得【${result.data.taskResult.singleReward}】积分 奖品【${result.data.lotteryResult.integral}】`)
+
+                } else {
+                    console.log(`❌账号[${this.index}]  完成抽奖失败`);
+                }
+            } else {
+                console.log(`❌账号[${this.index}]  完成抽奖失败`);
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    //分享API
+    async task_share() {
+        try {
+            let result = await this.taskRequest("get", `https://api.xinc818.com/mini/dailyTask/share`)
+            //console.log(options);
+            console.log(result);
+            if (result.code == 0) {
+                if (result.data !== null) {
+                    $.log(`✅账号[${this.index}]  完成分享成功 获得【${result.data.singleReward}】`)
+
+                } else {
+                    console.log(`❌账号[${this.index}]  完成分享失败`);
+                }
+            } else {
+                console.log(`❌账号[${this.index}]  完成分享失败`);
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    //获取帖子列表API(包含用户和帖子)
+    async art_list() {
+        try {
+            let result = await this.taskRequest("get", `https://cdn-api.xinc818.com/mini/posts/sorts?sortType=COMMENT&pageNum=1&pageSize=10&groupClassId=0`)
+            //console.log(options);
+            console.log(result);
+            if (result.code == 0) {
+                if (result.data.list.length > 0) {
+                    for (let i = 0; i < 2; i++)
+                        this.artList.push(result.data.list[i].publisherId)
+                }
+            } else {
+
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    //获取商品API
+    async goods_list() {
+        try {
+            let result = await this.taskRequest("get", `https://cdn-api.xinc818.com/mini/integralGoods?orderField=sort&orderScheme=DESC&pageSize=10&pageNum=1`)
+            //console.log(options);
+            console.log(result);
+            if (result.code == 0) {
+                if (result.data.list.length > 0) {
+                    for (let i = 0; i < 2; i++)
+                        this.goodsList.push(result.data.list[i].id)
+                }
+            } else {
+
+                console.log(result);
+            }
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    async taskRequest(method, url, body = "") {
+        //
+        let headers = {
+            //"Host": "api.xinc818.com",
+            "Connection": "keep-alive",
+            "charset": "utf-8",
+            "User-Agent": "Mozilla/5.0 (Linux; Android 10; MI 8 Lite Build/QKQ1.190910.002; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/116.0.0.0 Mobile Safari/537.36 XWEB/1160027 MMWEBSDK/20231002 MMWEBID/2585 MicroMessenger/8.0.43.2480(0x28002B51) WeChat/arm64 Weixin NetType/WIFI Language/zh_CN ABI/arm64 MiniProgramEnv/android",
+            "content-type": "application/json",
+            "Accept-Encoding": "gzip,compress,br,deflate",
+            "sso": this.ck,
+            "Referer": "https://servicewechat.com/wx673f827a4c2c94fa/253/page-frame.html"
+        }
+        const reqeuestOptions = {
+            url: url,
+            method: method,
+            headers: headers
+        }
+        if (method !== "get") {
+            if (headers["Content-Type"] == "application/json") {
+                reqeuestOptions["body"] = JSON.stringify(body);
+            } else {
+                reqeuestOptions["body"] = body
+            }
+        }
+        let { body: result } = await $.httpRequest(reqeuestOptions)
         return result
     }
-    encryptData(x, key) {
-        const CryptoJS = require("crypto-js")
-        function aesEncrypt(e, r) {
-            var n = CryptoJS.enc.Utf8.parse(r),
-                o = CryptoJS.enc.Utf8.parse(e),
-                s = CryptoJS.AES.encrypt(o, n, {
-                    mode: CryptoJS.mode.ECB,
-                    padding: CryptoJS.pad.Pkcs7,
-                });
-            return s.toString();
-        }
-        return aesEncrypt(JSON.stringify({ x: x, y: 5 }), key)
-    }
-    async check_captcha(point, cap_token) {
-        try {
-            //console.log("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/check`, { "module": "benefit", "activity_id": 1, "point": encodeURIComponent(point), "cap_token": cap_token })
-            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/check`, { "module": "benefit", "activity_id": 1, "point": point, "cap_token": cap_token })
-            //console.log(options);
-            if (result.code == 0) {
-                console.log(`第[${this.index}]验证成功`);
-
-            }
-            return result
-            //result.code == 0 ? $.log(`阅读成功获得[${result.data.credits}]金豆`) : $.log(`阅读失败`)
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    async taskH5Request(method, url, body = "") {
-        url = url.replace("/%/g", "/%25")
-        let uuid = $.uuid()
-        let timestamp = Date.now()
-        let data
-        if (method == "get") {
-            data = $.getURLParams(url)
-        } else if (method == "post") {
-            data = body
-        }
-        let sign = await this.getSignH5(this.Api_DeviceId, uuid, timestamp, this.Api_AuthId, this.Api_Token, data, this.Api_LoginKey)
-        if (sign == "") {
-            console.log(`脚本运行False`)
-            this.wa = false
-            return;
-
-        }
-        let headers = {
-            "Host": "op-api.cloud.jinhua.com.cn",
-            "Accept": "application/json, text/plain, */*",
-            "Content-Type": "application/json; charset=utf-8",
-            "Access-Nonce-Str": uuid,
-            "Access-Device-Id": this.Api_DeviceId,
-            "Access-Api-Token": this.Api_Token,
-            "Access-Auth-Id": this.Api_AuthId,
-            "Access-App-Id": "wxc097803934a957eb",
-            "Access-Type": "app",
-            //"Cookie": `acw_tc=368c632ad8b8822587388ffcfeb6692652c9238b27ae47de51454879421cfa1f`,
-            "Access-Api-Signature": sign,
-            "Accept-Language": "zh-CN,zh-Hans;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Origin": "https://op-h5.cloud.jinhua.com.cn",
-            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 15_7_1 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 JinHua_JCY jcy_version:B",
-            "Referer": "https://op-h5.cloud.jinhua.com.cn/",
-            "Connection": "keep-alive",
-            "Access-Timestamp": timestamp
-        }
-        //console.log(headers)
-        //console.log(this.Api_LoginKey)
-        if (this.Api_LoginKey !== "") {
-            headers['Authorization'] = this.Api_Authorization
-        }
-        //console.log(headers)
-        if (method == "get") {
-            return await $.httpRequest({ method: method, url: url, headers: headers })
-        } else if (method == "post") {
-            return await $.httpRequest({ method: method, url: url, headers: headers, body: JSON.stringify(body) })
-        }
-    }
-
-    async task_exchange() {
-        try {
-            let optionId = 19
-            if (cash == 500) {
-                optionId = 2
-            } else if (cash == 100) {
-                optionId = 19
-            } else if (cash == 1000) {
-                optionId = 3
-            } else if (cash == 3000) {
-                optionId = 29
-            } else if (cash == 5000) {
-                optionId = 5
-            } else if (cash == 8000) {
-                optionId = 17
-            } else if (cash == 10000) {
-                optionId = 18
-            }
-
-            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/welfare/cash/exchange`, {
-                "cash": cash,
-                "optionId": optionId
-            })
-            //console.log(options);
-            if (result.code == 0) {
-                $.log(`第[${this.index}]提现成功`)
-
-            } else {
-                //console.log(options);
-                $.log(`第[${this.index}]提现失败 ${JSON.stringify(result)}`)
-            }
-            $.log(`当前时间戳[${new Date()}]`)
-            //result.code == 0 ? $.log(`阅读成功获得[${result.data.credits}]金豆`) : $.log(`阅读失败`)
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-    async login_activity() {
-        try {
-            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/member/login`, { debug: 0, userId: "" })
-            //console.log(options);
-            //console.log(result);
-            if (result.code == 0) {
-                this.Api_LoginKey = result.data.key
-                this.Api_Authorization = "Bearer " + result.data.token
-                $.log(`第[${this.index}]登录活动成功`)
-            }
-        } catch (e) {
-            console.log(e);
-        }
-    }
-
-
-    async getSignH5(device, nonce, timestamp, auth, token, data, key) {
-        //console.log(device, nonce, timestamp, auth, token, data, key)
-        const crypto = require('crypto');
-        function getApiSign(device, nonce, timestamp, auth, token, c = {}, l = `35c782a2`) {
-            let u = {
-                app_id: `wxc097803934a957eb`,
-                device_id: device,//每个设备不一样
-                nonce_str: nonce,//随机UUID
-                timestamp: timestamp,//时间戳
-                auth_id: auth,//每个用户唯一
-                token: token,//每个用户唯一
-                source_type: `app`,
-                ...c,//GET params || {}  POST 如果有就是data 没有{}  
-            }
-            let f = Object.keys(u);
-            f.sort();
-            let m = "";
-            for (let x of f) {
-                if (x == "file") continue;
-                let g = "";
-                Array.isArray(u[x]) ? (g = JSON.stringify(u[x])) : (g = "" + u[x]),
-                    (m += x + "=" + g + "&&");
-            }
-            if (l == "" || l == null || l == undefined) {
-                l = `35c782a2`
-            }
-            let sign = crypto.createHash('sha256').update(m + l).digest('hex')
-            return sign
-        };
-        return getApiSign(device, nonce, timestamp, auth, token, data, key)
-    }
 }
 
-async function start() {
-    
-}
+
 
 !(async () => {
     if (!(await checkEnv())) return;
     if (userList.length > 0) {
-        await start();
+        let taskall = [];
+        for (let user of userList) {
+            if (user.ckStatus) {
+                taskall.push(user.main());
+            }
+        }
+        await Promise.all(taskall);
     }
-    //await $.sendMsg($.logs.join("\n"))
+    await $.sendMsg($.logs.join("\n"))
 })()
     .catch((e) => console.log(e))
     .finally(() => $.done());
@@ -316,7 +285,6 @@ async function start() {
  */
 async function checkEnv() {
     let userCookie = ($.isNode() ? process.env[ckName] : $.getdata(ckName)) || "";
-
     if (userCookie) {
         let e = envSplitor[0];
         for (let o of envSplitor)
@@ -324,19 +292,9 @@ async function checkEnv() {
                 e = o;
                 break;
             }
-        for (let n of userCookie.split(e)) {
-            if (n) {
-                n = n.replaceAll(`Auth-Token=`, '');
-                n = n.replaceAll(`Auth-Id=`, '');
-                n = n.replaceAll(`push_device=`, '');
-                n = n.replaceAll(`driver-id=`, '');
-                userList.push(new Task(n))
-            }
-
-
-        }
+        for (let n of userCookie.split(e)) n && userList.push(new Task(n));
     } else {
-        console.log("未找到CK");
+        console.log(`未找到CK【${ckName}】`);
         return;
     }
     return console.log(`共找到${userList.length}个账号`), true; //true == !0
@@ -495,6 +453,7 @@ function Env(t, s) {
                 .map(([key, value]) => `${key}=${typeof value === 'object' ? JSON.stringify(value) : value}`)
                 .join('&');
         }
+        //从url获取参数组成json
         getURLParams(url) {
             const params = {};
             const queryString = url.split('?')[1];
@@ -502,7 +461,7 @@ function Env(t, s) {
                 const paramPairs = queryString.split('&');
                 paramPairs.forEach(pair => {
                     const [key, value] = pair.split('=');
-                    params[key] = decodeURIComponent(value);
+                    params[key] = value;
                 });
             }
             return params;
@@ -545,27 +504,28 @@ function Env(t, s) {
             if (t.method === 'get') {
                 delete t.headers['Content-Type'];
                 delete t.headers['Content-Length'];
+                delete t.headers['content-type'];
+                delete t.headers['content-length'];
                 delete t["body"]
             }
             if (t.method === 'post') {
-                let contentType;
-
+                let ContentType;
                 if (!t.body) {
                     t.body = ""
                 } else {
                     if (typeof t.body == "string") {
                         if (this.isJSONString(t.body)) {
-                            contentType = 'application/json'
+                            ContentType = 'application/json'
                         } else {
-                            contentType = 'application/x-www-form-urlencoded'
+                            ContentType = 'application/x-www-form-urlencoded'
                         }
                     } else if (this.isJson(t.body)) {
                         t.body = JSON.stringify(t.body);
-                        contentType = 'application/json';
+                        ContentType = 'application/json';
                     }
                 }
-                if (!t.headers['Content-Type']) {
-                    t.headers['Content-Type'] = contentType;
+                if (!t.headers['Content-Type'] || !t.headers['content-type']) {
+                    t.headers['Content-Type'] = ContentType;
                 }
                 delete t.headers['Content-Length'];
             }
