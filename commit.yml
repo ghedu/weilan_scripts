@@ -2,10 +2,16 @@
 branches: {
   }
 fileChange:
-  /Look_at_Yuhang.py:
-    newFile: !uuid 'ea193a1935f6d7461bf9fa634f0436729877d1b6'
-    oldFile: !uuid '0124c64bf9692eea8fd0d4ca28310d688592a496'
-gitCommitId: !uuid 'eeeccc4bf9167c9c32112bc8b42764818f1293f0'
+  /jixing.js:
+    newFile: !uuid '543688074e8c721691839075b04eee00041cfa8b'
+    oldFile: null
+  /jx_get_token.js:
+    newFile: !uuid '2d0f48cca0a369818cb6b494d49f6be85af9dfb5'
+    oldFile: null
+  /xpgo.js:
+    newFile: !uuid '99c2e78cccafd6feddb3a2808fa0a0655c6da12e'
+    oldFile: null
+gitCommitId: !uuid 'c265554d45f5cd05e2136dbb18a6cd7760f7140a'
 renames: {
   }
-revisionId: 103
+revisionId: 104
