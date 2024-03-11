@@ -2,16 +2,13 @@
 branches: {
   }
 fileChange:
-  /jixing.js:
-    newFile: !uuid '543688074e8c721691839075b04eee00041cfa8b'
-    oldFile: null
-  /jx_get_token.js:
-    newFile: !uuid '2d0f48cca0a369818cb6b494d49f6be85af9dfb5'
+  /xpg.js:
+    newFile: !uuid '0b33dc054474658b7a4dd1af1a9de3c0396a9ab5'
     oldFile: null
   /xpgo.js:
-    newFile: !uuid '99c2e78cccafd6feddb3a2808fa0a0655c6da12e'
-    oldFile: null
-gitCommitId: !uuid 'c265554d45f5cd05e2136dbb18a6cd7760f7140a'
+    newFile: null
+    oldFile: !uuid '99c2e78cccafd6feddb3a2808fa0a0655c6da12e'
+gitCommitId: !uuid 'fd3ac35a57c3f65f94c04764795bdab66eee069c'
 renames: {
   }
-revisionId: 104
+revisionId: 105
