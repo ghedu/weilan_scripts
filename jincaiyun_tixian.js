@@ -1,19 +1,7 @@
-/**
- * 单独过滑块脚本
- * 严格按照cron定时
- * cron 55 8,20,22 * * *
- * 变量名:JinCaiYunTouLu
- * 变量值:2w获取金XX的CK  只要值 Auth-Token的值#Auth-Id的值#push_device的值#driver-id的值
- * 例如 fXXXXXXXXXXXXXXXXXXea#feAAAAAAAAAAAAAAAAAAAAAAa8#xzmsasas5qmqsaexloh#e1ef3w8d-548d-4s9c-a0sc-decq07sas9e5
- * 多账户换行或者& 或者一对一变量
- * 更改cash变量可以更换兑换额度  只支持 100  500  1000 
- * 适配WOOLWEB变量
- */
-//单独过滑块脚本
-//key = `你的卡密`
-//ckName 变量名字
+
+const cash = 500;
 let ckName = "JinCaiYunTouLu";
-const key = `872aa01954cf59de5b4be82616371066`;
+const waitTime =  50; 
 
 const $ = new Env("金彩云");
 const notify = $.isNode() ? require('./sendNotify') : '';
@@ -35,10 +23,8 @@ class Task {
         this.act_readList = []
         this.BeiJingTime = ''
         this.wa = true
-        //定义在这里的headers会被get请求删掉content-type 而不会重置
     }
     async main() {
-        //await this.task_exchange()
         await this.login_activity();
         for (let i = 0; i < 10; i++) {
             let v = await this.get_captcha();
@@ -46,9 +32,132 @@ class Task {
                 break;
             }
         }
+        this.BeiJingTime = await this.getTime_china()
+        this.BeiJingTime = Number(this.BeiJingTime)
+        let date = new Date(this.BeiJingTime)
+        const hour = this.isInTimeRange(this.BeiJingTime)
+        if (hour) {
+            if (hour == 9) {
+                const morning9 = new Date(this.BeiJingTime);
+                morning9.setHours(9, 0, 0, 0);
+                let waitTime9 = morning9.getTime() - date.getTime()
+                console.log(`距离提现还剩` + waitTime9 + `毫秒`)
+                await $.wait(waitTime9 + Number(waitTime))
+                await this.task_exchange()
+            } else if (hour == 21) {
+                const evening9 = new Date(this.BeiJingTime);
+                evening9.setHours(21, 0, 0, 0);
+                let waitTime21 = evening9.getTime() - date.getTime()
+                console.log(`距离提现还剩` + waitTime21 + `毫秒`)
+                await $.wait(waitTime21 + Number(waitTime))
+                await this.task_exchange()
+            } else if (hour == 17) {
+                const evening17 = new Date(this.BeiJingTime);
+                evening17.setHours(17, 0, 0, 0);
+                let waitTime17 = evening17.getTime() - date.getTime()
+                console.log(`距离提现还剩` + waitTime17 + `毫秒`)
+                await $.wait(waitTime17 + Number(waitTime))
+                await this.task_exchange()
+            }
+        }
+
     }
+    isInTimeRange(timestamp) {
+        // 将时间戳转换为Date对象
+        const date = new Date(timestamp); // 注意时间戳单位是毫秒
+        const hour = date.getHours();
+        if (hour == 8 && hour < 9) {
+            return 9
+        } else if (hour == 20 && hour < 21) {
+            return 21
+        } else if (hour == 16 && hour < 17) {
+            return 17
+        }
+    }
+    async get_captcha() {
+        try {
+            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/get`, { "module": "benefit", "activity_id": 1 })
+            //console.log(options);
+            //console.log(result);
+            if (result.code == 0) {
+                $.log(`第[${this.index}]滑块获取成功`)
+                let { body: b64_tgResult } = await $.httpRequest({ "method": "get", url: "http://api.onecc.cc/api/urltob64?url=" + encodeURIComponent(result.data.jigsawImageUrl) })
+                let b64_tg = b64_tgResult.data
+                let { body: b64_bgResult } = await $.httpRequest({ "method": "get", url: "http://api.onecc.cc/api/urltob64?url=" + encodeURIComponent(result.data.originalImageUrl) })
+                let b64_bg = b64_bgResult.data
+                let x = await this.ocr(b64_tg, b64_bg)
 
+                let points = this.encryptData(x, result.data.secretKey)
+                //console.log(points)
+                let resultCaptcha = await this.check_captcha(points, result.data.token)
 
+                return resultCaptcha
+            } else {
+                $.log(`第[${this.index}]滑块获取失败`)
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async ocr(tg, bg) {
+        //console.log(bg)
+        let bodyStr = JSON.stringify({ 'target_img': tg, 'bg_img': bg })
+        let body = Buffer.from(bodyStr, 'utf-8').toString('base64');
+        try {
+            let options = {
+                "method": "post", url: "http://ocr.onecc.cc/slide/match/b64/json",
+                body: body
+            }
+            let { body: result } = await $.httpRequest(options)
+            //console.log(options);
+            //console.log(result);
+            if (result.status == 200) {
+                $.log(`第[${this.index}]滑块识别结果`)
+                console.log(result.result["target"][0])
+                return result.result["target"][0]
+            } else {
+                $.log(`第[${this.index}]滑块识别失败`)
+                return false
+            }
+
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    async getTime_china() {
+
+        let { body: result } = await $.httpRequest({ method: "get", url: `https://m.tsa.cn/api/time/getCurrentTime` })
+        return result
+    }
+    encryptData(x, key) {
+        const CryptoJS = require("crypto-js")
+        function aesEncrypt(e, r) {
+            var n = CryptoJS.enc.Utf8.parse(r),
+                o = CryptoJS.enc.Utf8.parse(e),
+                s = CryptoJS.AES.encrypt(o, n, {
+                    mode: CryptoJS.mode.ECB,
+                    padding: CryptoJS.pad.Pkcs7,
+                });
+            return s.toString();
+        }
+        return aesEncrypt(JSON.stringify({ x: x, y: 5 }), key)
+    }
+    async check_captcha(point, cap_token) {
+        try {
+            //console.log("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/check`, { "module": "benefit", "activity_id": 1, "point": encodeURIComponent(point), "cap_token": cap_token })
+            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/check`, { "module": "benefit", "activity_id": 1, "point": point, "cap_token": cap_token })
+            //console.log(options);
+            if (result.code == 0) {
+                console.log(`第[${this.index}]验证成功`);
+
+            }
+            return result
+            //result.code == 0 ? $.log(`阅读成功获得[${result.data.credits}]金豆`) : $.log(`阅读失败`)
+        } catch (e) {
+            console.log(e);
+        }
+    }
     async taskH5Request(method, url, body = "") {
         url = url.replace("/%/g", "/%25")
         let uuid = $.uuid()
@@ -60,7 +169,12 @@ class Task {
             data = body
         }
         let sign = await this.getSignH5(this.Api_DeviceId, uuid, timestamp, this.Api_AuthId, this.Api_Token, data, this.Api_LoginKey)
+        if (sign == "") {
+            console.log(`脚本运行False`)
+            this.wa = false
+            return;
 
+        }
         let headers = {
             "Host": "op-api.cloud.jinhua.com.cn",
             "Accept": "application/json, text/plain, */*",
@@ -71,6 +185,7 @@ class Task {
             "Access-Auth-Id": this.Api_AuthId,
             "Access-App-Id": "wxc097803934a957eb",
             "Access-Type": "app",
+            //"Cookie": `acw_tc=368c632ad8b8822587388ffcfeb6692652c9238b27ae47de51454879421cfa1f`,
             "Access-Api-Signature": sign,
             "Accept-Language": "zh-CN,zh-Hans;q=0.9",
             "Accept-Encoding": "gzip, deflate, br",
@@ -93,84 +208,44 @@ class Task {
         }
     }
 
-
-    async get_captcha() {
+    async task_exchange() {
         try {
-            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/get`, { "module": "benefit", "activity_id": 1 })
+            let optionId = 19
+            if (cash == 500) {
+                optionId = 2
+            } else if (cash == 100) {
+                optionId = 19
+            } else if (cash == 1000) {
+                optionId = 3
+            } else if (cash == 3000) {
+                optionId = 29
+            } else if (cash == 5000) {
+                optionId = 5
+            } else if (cash == 8000) {
+                optionId = 17
+            } else if (cash == 10000) {
+                optionId = 18
+            }
+
+            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/welfare/cash/exchange`, {
+                "cash": cash,
+                "optionId": optionId
+            })
             //console.log(options);
-            //console.log(result);
             if (result.code == 0) {
-                let { body: b64_tgResult } = await $.httpRequest({ "method": "get", url: "http://api.onecc.cc/api/urltob64?url=" + encodeURIComponent(result.data.jigsawImageUrl) })
-                let b64_tg = b64_tgResult.data
-                let { body: b64_bgResult } = await $.httpRequest({ "method": "get", url: "http://api.onecc.cc/api/urltob64?url=" + encodeURIComponent(result.data.originalImageUrl) })
-                let b64_bg = b64_bgResult.data
-                let x = await this.ocr(b64_tg, b64_bg)
-                $.log(`滑块获取成功`)
-                let points = this.encryptData(x, result.data.secretKey)
-                //console.log(points)
-                let resultCaptcha = await this.check_captcha(points, result.data.token)
+                $.log(`第[${this.index}]提现成功`)
 
-                return resultCaptcha
             } else {
-                $.log(`滑块获取失败`)
+                //console.log(options);
+                $.log(`第[${this.index}]提现失败 ${JSON.stringify(result)}`)
             }
-
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    async ocr(tg, bg) {
-        //console.log(bg)
-        let bodyStr = JSON.stringify({ 'target_img': tg, 'bg_img': bg })
-        let body = Buffer.from(bodyStr, 'utf-8').toString('base64');
-        try {
-            let options = {
-                "method": "post", url: "http://ocr.onecc.cc/slide/match/b64/json",
-                body: body
-            }
-            let { body: result } = await $.httpRequest(options)
-            //console.log(options);
-            //console.log(result);
-            if (result.status == 200) {
-                $.log(`滑块识别结果`)
-                console.log(result.result["target"][0])
-                return result.result["target"][0]
-            } else {
-                $.log(`滑块识别失败`)
-                return false
-            }
-
-        } catch (e) {
-            console.log(e);
-        }
-    }
-    encryptData(x, key) {
-        const CryptoJS = require("crypto-js")
-        function aesEncrypt(e, r) {
-            var n = CryptoJS.enc.Utf8.parse(r),
-                o = CryptoJS.enc.Utf8.parse(e),
-                s = CryptoJS.AES.encrypt(o, n, {
-                    mode: CryptoJS.mode.ECB,
-                    padding: CryptoJS.pad.Pkcs7,
-                });
-            return s.toString();
-        }
-        return aesEncrypt(JSON.stringify({ x: x, y: 5 }), key)
-    }
-    async check_captcha(point, cap_token) {
-        try {
-            //console.log("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/check`, { "module": "benefit", "activity_id": 1, "point": encodeURIComponent(point), "cap_token": cap_token })
-            let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/captcha/check`, { "module": "benefit", "activity_id": 1, "point": point, "cap_token": cap_token })
-            //console.log(options);
-            console.log(`=================`)
-            console.log(result);
-            console.log(`=================`)
-            return result
+            $.log(`当前时间戳[${new Date()}]`)
             //result.code == 0 ? $.log(`阅读成功获得[${result.data.credits}]金豆`) : $.log(`阅读失败`)
         } catch (e) {
             console.log(e);
         }
     }
+
     async login_activity() {
         try {
             let { body: result } = await this.taskH5Request("post", `https://op-api.cloud.jinhua.com.cn/api/member/login`, { debug: 0, userId: "" })
@@ -179,7 +254,7 @@ class Task {
             if (result.code == 0) {
                 this.Api_LoginKey = result.data.key
                 this.Api_Authorization = "Bearer " + result.data.token
-                $.log(`登录活动成功`)
+                $.log(`第[${this.index}]登录活动成功`)
             }
         } catch (e) {
             console.log(e);
@@ -213,7 +288,6 @@ class Task {
             if (l == "" || l == null || l == undefined) {
                 l = `35c782a2`
             }
-            //console.log(m + l);
             let sign = crypto.createHash('sha256').update(m + l).digest('hex')
             return sign
         };
@@ -222,22 +296,7 @@ class Task {
 }
 
 async function start() {
-    let { body: keyinfo } = await $.httpRequest({ method: "get", url: `http://api.onecc.cc/api/UserInfo?key=${key}` })
-    if (keyinfo.status == true) {
-        $.log(`[${keyinfo.data.qq}] `)
-        let taskall = [];
-        for (let user of userList) {
-            if (user.ckStatus) {
-                taskall.push(await user.main());
-            }
-        }
-        await Promise.all(taskall);
-    } else {
-        $.log("卡密验证失败")
-    }
-
-
-
+    
 }
 
 !(async () => {
