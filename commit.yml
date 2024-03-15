@@ -2,13 +2,19 @@
 branches: {
   }
 fileChange:
-  /xpg.js:
-    newFile: !uuid '0b33dc054474658b7a4dd1af1a9de3c0396a9ab5'
-    oldFile: null
-  /xpgo.js:
+  /jincaiyun.js:
+    newFile: !uuid '01525fd11036c113f8c1b3b4d72a64b98a4db3c1'
+    oldFile: !uuid '3bbd7fcdee13885b1d3a68285f939a19a9c438cf'
+  /jincaiyun_old.js:
     newFile: null
-    oldFile: !uuid '99c2e78cccafd6feddb3a2808fa0a0655c6da12e'
-gitCommitId: !uuid 'fd3ac35a57c3f65f94c04764795bdab66eee069c'
+    oldFile: !uuid 'e9e8c8426c25e613da06e055116f36b712180247'
+  /jincaiyun_tixian.js:
+    newFile: !uuid '3bbd7fcdee13885b1d3a68285f939a19a9c438cf'
+    oldFile: null
+  /jincaiyunrw.js:
+    newFile: !uuid '9589750707fcc660bc25cac1f6abfdd5019106a0'
+    oldFile: !uuid '521de7a5b0d2e7823910340cd09817b9c2067135'
+gitCommitId: !uuid '6db3a0290c071a3677f85acfafc3b35695abc5a4'
 renames: {
   }
-revisionId: 105
+revisionId: 106
