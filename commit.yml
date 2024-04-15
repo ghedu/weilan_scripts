@@ -2,19 +2,10 @@
 branches: {
   }
 fileChange:
-  /jincaiyun.js:
-    newFile: !uuid '01525fd11036c113f8c1b3b4d72a64b98a4db3c1'
-    oldFile: !uuid '3bbd7fcdee13885b1d3a68285f939a19a9c438cf'
-  /jincaiyun_old.js:
-    newFile: null
-    oldFile: !uuid 'e9e8c8426c25e613da06e055116f36b712180247'
-  /jincaiyun_tixian.js:
-    newFile: !uuid '3bbd7fcdee13885b1d3a68285f939a19a9c438cf'
+  /gmjk.js:
+    newFile: !uuid '578a9acf420e821d8c783ef0cd91ea268f7f2e59'
     oldFile: null
-  /jincaiyunrw.js:
-    newFile: !uuid '9589750707fcc660bc25cac1f6abfdd5019106a0'
-    oldFile: !uuid '521de7a5b0d2e7823910340cd09817b9c2067135'
-gitCommitId: !uuid '6db3a0290c071a3677f85acfafc3b35695abc5a4'
+gitCommitId: !uuid 'e1126cbd5e5ded4c55d092c7417fec3d6c96142a'
 renames: {
   }
-revisionId: 106
+revisionId: 107
