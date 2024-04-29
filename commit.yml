@@ -2,10 +2,13 @@
 branches: {
   }
 fileChange:
-  /趣攒米任务 .js:
+  /quzanmi.js:
     newFile: !uuid '11900296960a8f79213c8f9e4019104cfb3e3cc0'
     oldFile: null
-gitCommitId: !uuid 'bf63b8b3b625dfa0fde1963a74d984d3af21129c'
-renames: {
-  }
-revisionId: 108
+  /趣攒米任务 .js:
+    newFile: null
+    oldFile: !uuid '11900296960a8f79213c8f9e4019104cfb3e3cc0'
+gitCommitId: !uuid 'cc895926ed98f167e99c2e31e8e2e364c255acaa'
+renames:
+  /quzanmi.js: /趣攒米任务 .js
+revisionId: 109
