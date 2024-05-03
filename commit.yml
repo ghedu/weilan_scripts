@@ -3,9 +3,9 @@ branches: {
   }
 fileChange:
   /kuake.py:
-    newFile: !uuid '7396ee8cdbf078d6e6ddb8f08479b3e7c675861d'
-    oldFile: null
-gitCommitId: !uuid '181d04184ed4e194fe341f155f4479017e0fd6c9'
+    newFile: null
+    oldFile: !uuid '7396ee8cdbf078d6e6ddb8f08479b3e7c675861d'
+gitCommitId: !uuid '0928312f1a32cf4d4c23f87c8e59a997499bfcde'
 renames: {
   }
-revisionId: 110
+revisionId: 111
