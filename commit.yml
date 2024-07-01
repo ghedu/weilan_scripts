@@ -2,13 +2,10 @@
 branches: {
   }
 fileChange:
-  /dianxin.js:
-    newFile: !uuid '89c251fe016629b6c879b019de80f36115224147'
+  /bjxd.js:
+    newFile: !uuid 'c1ab71e6fd3860c26e78cd1dd16898b756f3e455'
     oldFile: null
-  /sfsy.js:
-    newFile: !uuid 'ef2ade36ba337bccf93de461d0d0922db69127e2'
-    oldFile: null
-gitCommitId: !uuid '3cf509d4c7fa6363f4144bebaac0b8b0e0a14bb2'
+gitCommitId: !uuid '46116e8bc282db36eb2b9bbad8d29ee741825392'
 renames: {
   }
-revisionId: 113
+revisionId: 114
