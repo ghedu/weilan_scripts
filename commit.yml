@@ -2,10 +2,10 @@
 branches: {
   }
 fileChange:
-  /ydwx.py:
-    newFile: !uuid '765e818bc411900e12fdcd994caea7f049bd7312'
-    oldFile: !uuid '5cf165dafca323d8dc2d03c65e83d2995f14f12a'
-gitCommitId: !uuid '0166c2e3c8de2fd00a80c267e6efbf29e919dd05'
+  /xingfukandian.js:
+    newFile: null
+    oldFile: !uuid 'e87edb0c5b0cadc4c6590de52006b486c050caa2'
+gitCommitId: !uuid '187df8c08b69ef92d5eb8c1d789acf7816199fd4'
 renames: {
   }
-revisionId: 118
+revisionId: 119
