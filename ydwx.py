@@ -44,7 +44,7 @@ for i in range(len(ydwx_deviceParams)):
   timestamp = str(int(round(time.time() * 1000)))
   md5 = hashlib.md5()
   md52 = hashlib.md5()
-  sig = f'action=mixc.app.memberSign.sign&apiVersion=1.0&appId=68a91a5bac6a4f3e91bf4b42856785c6&appVersion=3.53.0&deviceParams={ydwx_deviceParams[i]}&imei=2333&mallNo=20014&osVersion=12.0.1&params=eyJtYWxsTm8iOiIyMDAxNCJ9&platform=h5&timestamp={timestamp}&token={ydwx_token[i]}&P@Gkbu0shTNHjhM!7F' # 创建md5加密对象
+  sig = f'action=mixc.app.memberSign.sign&apiVersion=1.0&appId=68a91a5bac6a4f3e91bf4b42856785c6&appVersion=3.53.0&deviceParams={ydwx_deviceParams[i]}&imei=2333&mallNo=20056&osVersion=12.0.1&params=eyJtYWxsTm8iOiIyMDAxNCJ9&platform=h5&timestamp={timestamp}&token={ydwx_token[i]}&P@Gkbu0shTNHjhM!7F' # 创建md5加密对象
   md5.update(sig.encode('utf-8'))  # 指定需要加密的字符串
   sign = md5.hexdigest()  			# 加密后的字符串
   url = 'https://app.mixcapp.com/mixc/gateway'
