@@ -212,7 +212,7 @@ if __name__ == '__main__':
     ENV_NAME = 'TBHYZX'
     CK_URL = 'https://wxa-tp.ezrpro.com/myvip/Base/User/WxAppOnLoginNew'
     CK_NAME = '响应body里的Fields全部内容'
-    CK_EX = '{"ezr-cop-id":"888","ezr-vuid":"888888","ezr-userid":"aaaaaaa","ezr-sv":"1","ezr-st":"8888","ezr-ss":"bbbbb"}'
+    CK_EX = '{"ezr-cop-id":"143","ezr-vuid":"114205732","ezr-userid":"oMfWKs04tHO5jZR98OAnkuOZR9Fk","ezr-sv":"1","ezr-st":"1720577216347","ezr-ss":"bc511782638e567da127f4c61e76735f8df3638f"}'
     print(f'''
 ✨✨✨ {APP_NAME}签到✨✨✨
 ✨ 功能：
