@@ -35,7 +35,7 @@ try {
         process.exit(1);
     }
     const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-    API_BASE = config.middle_platform || 'http://81.71.13.142:12800';
+    API_BASE = config.middle_platform || '';
     if (config.accounts && Array.isArray(config.accounts)) {
         ACCOUNTS = config.accounts.filter(acc => acc.scripts && acc.scripts.wysh === true);
     }
